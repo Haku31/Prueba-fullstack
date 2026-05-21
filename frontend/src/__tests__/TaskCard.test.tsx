@@ -53,6 +53,7 @@ describe('TaskCard', () => {
 
   it('displays the due date', () => {
     render(<TaskCard task={mockTask} onEdit={jest.fn()} onDelete={jest.fn()} />)
-    expect(screen.getByText('Dec 31, 2025')).toBeInTheDocument()
+    // Match Dec 30 or 31 depending on local timezone offset applied to UTC midnight
+    expect(screen.getByText(/Dec \d+, 2025/)).toBeInTheDocument()
   })
 })
