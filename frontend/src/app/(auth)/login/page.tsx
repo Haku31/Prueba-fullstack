@@ -9,8 +9,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { getErrorMessage } from '@/lib/utils'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -39,18 +39,20 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="card">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p className="text-gray-500 mt-1">Sign in to your account</p>
+            <h1 className="text-2xl font-bold text-gray-900">Bienvenido de vuelta</h1>
+            <p className="text-gray-500 mt-1">Inicia sesión en tu cuenta</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Correo electrónico
+              </label>
               <input
                 {...register('email')}
                 type="email"
                 className="input-field"
-                placeholder="you@example.com"
+                placeholder="tu@ejemplo.com"
                 autoComplete="email"
               />
               {errors.email && (
@@ -59,7 +61,9 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Contraseña
+              </label>
               <input
                 {...register('password')}
                 type="password"
@@ -79,14 +83,14 @@ export default function LoginPage() {
             )}
 
             <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
+              {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Don&apos;t have an account?{' '}
+            ¿No tienes cuenta?{' '}
             <Link href="/register" className="text-primary-600 hover:underline font-medium">
-              Sign up
+              Regístrate
             </Link>
           </p>
         </div>

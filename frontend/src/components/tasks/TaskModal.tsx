@@ -8,7 +8,7 @@ import { X } from 'lucide-react'
 import type { Task } from '@/types'
 
 const taskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255),
+  title: z.string().min(1, 'El título es obligatorio').max(255),
   description: z.string().max(2000).optional(),
   status: z.enum(['PENDING', 'DONE']),
   dueDate: z.string().optional(),
@@ -54,7 +54,9 @@ export function TaskModal({ isOpen, onClose, onSubmit, task, isLoading }: TaskMo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-lg font-semibold">{task ? 'Edit Task' : 'New Task'}</h2>
+          <h2 className="text-lg font-semibold">
+            {task ? 'Editar tarea' : 'Nueva tarea'}
+          </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X size={20} />
           </button>
@@ -62,18 +64,24 @@ export function TaskModal({ isOpen, onClose, onSubmit, task, isLoading }: TaskMo
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-            <input {...register('title')} className="input-field" placeholder="Task title" />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+            <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+            <input
+              {...register('title')}
+              className="input-field"
+              placeholder="Título de la tarea"
+            />
+            {errors.title && (
+              <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
             <textarea
               {...register('description')}
               className="input-field resize-none"
               rows={3}
-              placeholder="Optional description..."
+              placeholder="Descripción opcional..."
             />
             {errors.description && (
               <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
@@ -82,25 +90,27 @@ export function TaskModal({ isOpen, onClose, onSubmit, task, isLoading }: TaskMo
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
               <select {...register('status')} className="input-field">
-                <option value="PENDING">Pending</option>
-                <option value="DONE">Done</option>
+                <option value="PENDING">Pendiente</option>
+                <option value="DONE">Completada</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha límite
+              </label>
               <input {...register('dueDate')} type="date" className="input-field" />
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="btn-secondary flex-1">
-              Cancel
+              Cancelar
             </button>
             <button type="submit" disabled={isLoading} className="btn-primary flex-1">
-              {isLoading ? 'Saving...' : task ? 'Update' : 'Create'}
+              {isLoading ? 'Guardando...' : task ? 'Actualizar' : 'Crear'}
             </button>
           </div>
         </form>

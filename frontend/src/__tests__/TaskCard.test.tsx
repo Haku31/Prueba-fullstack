@@ -24,22 +24,22 @@ describe('TaskCard', () => {
     expect(screen.getByText('A test description')).toBeInTheDocument()
   })
 
-  it('shows Pending badge for PENDING status', () => {
+  it('shows Pendiente badge for PENDING status', () => {
     render(<TaskCard task={mockTask} onEdit={jest.fn()} onDelete={jest.fn()} />)
-    expect(screen.getByText('Pending')).toBeInTheDocument()
+    expect(screen.getByText('Pendiente')).toBeInTheDocument()
   })
 
-  it('shows Done badge for DONE status', () => {
+  it('shows Completada badge for DONE status', () => {
     const doneTask = { ...mockTask, status: 'DONE' as const }
     render(<TaskCard task={doneTask} onEdit={jest.fn()} onDelete={jest.fn()} />)
-    expect(screen.getByText('Done')).toBeInTheDocument()
+    expect(screen.getByText('Completada')).toBeInTheDocument()
   })
 
   it('calls onEdit when edit button is clicked', () => {
     const onEdit = jest.fn()
     render(<TaskCard task={mockTask} onEdit={onEdit} onDelete={jest.fn()} />)
 
-    fireEvent.click(screen.getByLabelText('Edit task'))
+    fireEvent.click(screen.getByLabelText('Editar tarea'))
     expect(onEdit).toHaveBeenCalledWith(mockTask)
   })
 
@@ -47,7 +47,7 @@ describe('TaskCard', () => {
     const onDelete = jest.fn()
     render(<TaskCard task={mockTask} onEdit={jest.fn()} onDelete={onDelete} />)
 
-    fireEvent.click(screen.getByLabelText('Delete task'))
+    fireEvent.click(screen.getByLabelText('Eliminar tarea'))
     expect(onDelete).toHaveBeenCalledWith('task-1')
   })
 

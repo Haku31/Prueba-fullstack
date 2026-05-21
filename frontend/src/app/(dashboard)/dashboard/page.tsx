@@ -13,6 +13,12 @@ import type { Task, TaskStatus } from '@/types'
 
 type FilterStatus = 'ALL' | TaskStatus
 
+const FILTER_LABELS: Record<FilterStatus, string> = {
+  ALL: 'Todas',
+  PENDING: 'Pendientes',
+  DONE: 'Completadas',
+}
+
 export default function DashboardPage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('ALL')
   const [page, setPage] = useState(1)
@@ -97,10 +103,10 @@ export default function DashboardPage() {
 
         <main className="max-w-5xl mx-auto px-4 py-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">My Tasks</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Mis Tareas</h1>
             <button onClick={handleOpenCreate} className="btn-primary flex items-center gap-2">
               <Plus size={18} />
-              New Task
+              Nueva tarea
             </button>
           </div>
 
@@ -122,12 +128,12 @@ export default function DashboardPage() {
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                {status === 'ALL' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}
+                {FILTER_LABELS[status]}
               </button>
             ))}
             {data && (
               <span className="text-sm text-gray-400 ml-auto">
-                {data.meta.total} task{data.meta.total !== 1 ? 's' : ''}
+                {data.meta.total} {data.meta.total === 1 ? 'tarea' : 'tareas'}
               </span>
             )}
           </div>
@@ -139,14 +145,18 @@ export default function DashboardPage() {
           )}
 
           {isError && (
-            <div className="text-center py-16 text-red-500">Failed to load tasks. Try refreshing.</div>
+            <div className="text-center py-16 text-red-500">
+              Error al cargar las tareas. Intenta recargar la página.
+            </div>
           )}
 
           {!isLoading && !isError && data?.data.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-gray-400 text-lg">No tasks found</p>
+              <p className="text-gray-400 text-lg">No hay tareas</p>
               <p className="text-gray-400 text-sm mt-1">
-                {filterStatus !== 'ALL' ? 'Try a different filter' : 'Create your first task to get started'}
+                {filterStatus !== 'ALL'
+                  ? 'Prueba con otro filtro'
+                  : 'Crea tu primera tarea para empezar'}
               </p>
             </div>
           )}
@@ -171,17 +181,17 @@ export default function DashboardPage() {
                     disabled={page === 1}
                     className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40"
                   >
-                    Previous
+                    Anterior
                   </button>
                   <span className="text-sm text-gray-500">
-                    Page {data.meta.page} of {data.meta.totalPages}
+                    Página {data.meta.page} de {data.meta.totalPages}
                   </span>
                   <button
                     onClick={() => setPage((p) => p + 1)}
                     disabled={page === data.meta.totalPages}
                     className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-40"
                   >
-                    Next
+                    Siguiente
                   </button>
                 </div>
               )}

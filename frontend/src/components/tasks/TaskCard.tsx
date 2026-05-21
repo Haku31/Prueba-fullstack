@@ -47,14 +47,14 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
           <button
             onClick={() => onEdit(task)}
             className="p-1.5 rounded-lg text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-            aria-label="Edit task"
+            aria-label="Editar tarea"
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(task.id)}
             className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-            aria-label="Delete task"
+            aria-label="Eliminar tarea"
           >
             <Trash2 size={15} />
           </button>
@@ -70,7 +70,7 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
               : 'bg-amber-100 text-amber-700'
           )}
         >
-          {isDone ? 'Done' : 'Pending'}
+          {isDone ? 'Completada' : 'Pendiente'}
         </span>
       </div>
     </div>

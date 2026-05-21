@@ -9,12 +9,12 @@ import { useAuth } from '@/hooks/useAuth'
 import { getErrorMessage } from '@/lib/utils'
 
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: 'Las contraseñas no coinciden',
   path: ['confirmPassword'],
 })
 
@@ -44,18 +44,18 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="card">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Create account</h1>
-            <p className="text-gray-500 mt-1">Start managing your tasks</p>
+            <h1 className="text-2xl font-bold text-gray-900">Crear cuenta</h1>
+            <p className="text-gray-500 mt-1">Empieza a gestionar tus tareas</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
               <input
                 {...register('name')}
                 type="text"
                 className="input-field"
-                placeholder="John Doe"
+                placeholder="Juan Pérez"
                 autoComplete="name"
               />
               {errors.name && (
@@ -64,12 +64,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Correo electrónico
+              </label>
               <input
                 {...register('email')}
                 type="email"
                 className="input-field"
-                placeholder="you@example.com"
+                placeholder="tu@ejemplo.com"
                 autoComplete="email"
               />
               {errors.email && (
@@ -78,7 +80,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
               <input
                 {...register('password')}
                 type="password"
@@ -93,7 +95,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
+                Confirmar contraseña
               </label>
               <input
                 {...register('confirmPassword')}
@@ -114,14 +116,14 @@ export default function RegisterPage() {
             )}
 
             <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
-              {isSubmitting ? 'Creating account...' : 'Create account'}
+              {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Already have an account?{' '}
+            ¿Ya tienes cuenta?{' '}
             <Link href="/login" className="text-primary-600 hover:underline font-medium">
-              Sign in
+              Inicia sesión
             </Link>
           </p>
         </div>

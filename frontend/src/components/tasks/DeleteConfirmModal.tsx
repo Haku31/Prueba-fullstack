@@ -20,17 +20,17 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm, isLoading }: De
             <AlertTriangle className="text-red-600" size={20} />
           </div>
           <div>
-            <h2 className="font-semibold text-gray-900">Delete task</h2>
-            <p className="text-sm text-gray-500">This action cannot be undone.</p>
+            <h2 className="font-semibold text-gray-900">Eliminar tarea</h2>
+            <p className="text-sm text-gray-500">Esta acción no se puede deshacer.</p>
           </div>
         </div>
 
         <div className="flex gap-3">
           <button onClick={onClose} className="btn-secondary flex-1">
-            Cancel
+            Cancelar
           </button>
           <button onClick={onConfirm} disabled={isLoading} className="btn-danger flex-1">
-            {isLoading ? 'Deleting...' : 'Delete'}
+            {isLoading ? 'Eliminando...' : 'Eliminar'}
           </button>
         </div>
       </div>

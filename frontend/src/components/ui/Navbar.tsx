@@ -11,7 +11,7 @@ export function Navbar() {
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <CheckSquare className="text-primary-600" size={22} />
-          <span className="font-semibold text-gray-900">Task Manager</span>
+          <span className="font-semibold text-gray-900">Gestor de Tareas</span>
         </div>
 
         <div className="flex items-center gap-4">
@@ -21,10 +21,10 @@ export function Navbar() {
           <button
             onClick={logout}
             className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-red-600 transition-colors"
-            aria-label="Logout"
+            aria-label="Cerrar sesión"
           >
             <LogOut size={16} />
-            <span className="hidden sm:block">Logout</span>
+            <span className="hidden sm:block">Cerrar sesión</span>
           </button>
         </div>
       </div>
