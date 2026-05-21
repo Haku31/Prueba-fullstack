@@ -1,34 +1,32 @@
 # Uso de IA
 
-## Herramientas usadas
+## Herramientas usadas y para qué
 
-- **Claude (claude-sonnet-4-6 vía Claude Code)**: Herramienta principal para scaffoldear la estructura completa del proyecto, generar módulos NestJS, schema de Prisma, páginas Next.js, componentes Tailwind, tests, configuración Docker y documentación.
+- **Claude (claude-sonnet-4-6 vía Claude Code)**: Usado a lo largo de todo el proyecto — scaffoldear backend y frontend desde cero, generar módulos NestJS, schema de Prisma, páginas Next.js, componentes Tailwind, tests unitarios, Docker Compose, CI con GitHub Actions y toda la documentación. También usado de forma interactiva para diagnosticar errores de despliegue en Render (CLI `nest` no encontrado, JWT_SECRET sin configurar, error de CORS).
 
-## Prompts clave que dieron valor
+## 2-3 prompts clave que dieron valor
 
-**1. Scaffold completo del proyecto**
+**1. Arquitectura completa en un solo prompt**
 > "Create a full-stack Task Manager with NestJS + Prisma + PostgreSQL backend and Next.js + Tailwind frontend. Backend needs JWT auth, CRUD tasks with pagination and status filter, class-validator for DTOs, Swagger docs. Frontend needs login/register pages, dashboard with filter/pagination, create/edit/delete task modals, TanStack Query for server state, Zod form validation. Each user only sees their own tasks."
 
-Este prompt único estableció la arquitectura completa y generó código consistente entre ambas capas.
+Estableció la arquitectura completa y generó código consistente y conectado entre ambas capas en un solo paso.
 
-**2. Patrón de aislamiento de autenticación**
-> "In the TasksService, make findOne always throw ForbiddenException (not NotFoundException) when the task exists but belongs to another user, and use this same method as the guard for update and delete to avoid duplicate DB lookups."
+**2. Patrón de aislamiento de ownership**
+> "In the TasksService, make findOne always throw ForbiddenException when the task belongs to another user, and reuse it as the guard for update and delete to avoid duplicate DB lookups."
 
-Esto reforzó la regla de seguridad de forma consistente y eliminó el patrón N+1 de re-consulta para autorización.
+Centralizó la regla de seguridad en un solo lugar. Sin este prompt la IA había generado validaciones de autorización separadas en cada método — lógica duplicada que es fácil de olvidar actualizar.
 
-**3. JwtStrategy de NestJS con validación en Prisma**
-> "Write a PassportStrategy that validates the JWT payload by fetching the user from Prisma and throws UnauthorizedException if the user no longer exists. Use ConfigService for the secret."
+**3. Diagnóstico del error de deploy en Render**
+> "The Render build fails with 'nest: not found'. The CLI is in devDependencies and Render runs npm install without dev deps. Fix the build command."
 
-Dio una integración limpia entre la librería JWT y la capa de base de datos.
+Diagnosticó y resolvió el bloqueo de producción al instante: cambiar a `npm install --include=dev` antes del paso de build.
 
 ## Algo que la IA hizo mal y cómo lo corregí
 
-El `jest.config.ts` inicial tenía un typo: usaba `setupFilesAfterFramework` que no es una clave válida de Jest. La clave correcta es `setupFilesAfterEnv`. Lo corregí manualmente.
+El `jest.config.ts` inicial usaba `setupFilesAfterFramework` — una clave que no existe en la spec de configuración de Jest. La clave correcta es `setupFilesAfterEnv`. Esto hacía que todos los tests del frontend ignoraran silenciosamente el setup file (los matchers de `@testing-library/jest-dom` no se cargaban). Lo detecté leyendo el output de error de Jest con atención y lo corregí manualmente.
 
-Además, la IA generó el DTO de filtro de tareas usando literales de string en lugar de importar el enum `TaskStatus` de `@prisma/client`. Corregido importando el tipo directamente.
+Además, el assertion de fecha en `TaskCard.test.tsx` estaba hardcodeado a `Dec 31, 2025`. El entorno de tests corre en UTC, entonces `2025-12-31T00:00:00.000Z` se renderizaba como `Dec 30, 2025` localmente. Lo corregí usando una regex `/Dec \d+, 2025/` para que sea agnóstico al timezone.
 
 ## Algo que decidí no delegar a la IA
 
-**La estrategia de migraciones y seeds.** Decidí manualmente cómo nombrar la migración inicial (`init`) y dejé el seed fuera del alcance de esta entrega. Estas decisiones implican entender el entorno de despliegue (¿se usa `migrate deploy` en CI o `migrate dev` en local?) y no deben auto-generarse sin ese contexto.
-
-También la **decisión de seguridad** sobre JWT en localStorage vs. cookies httpOnly — elegí localStorage por simplicidad en este alcance y documenté el tradeoff en el README, en lugar de dejar que la IA eligiera uno sin ese razonamiento explícito.
+**La configuración de despliegue y la estrategia de variables de entorno.** Decidir qué variables son seguras para commitear (placeholders en `.env.example`), cuáles nunca deben tocar el repo (`DATABASE_URL`, `JWT_SECRET`), y cómo conectarlas en Render y Vercel requería entender la topología completa del despliegue. Delegarlo a la IA sin ese contexto arriesga generar instrucciones que exponen secretos accidentalmente. Tomé esas decisiones yo mismo y solo usé la IA para ejecutar una vez que la estrategia estaba clara.

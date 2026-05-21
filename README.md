@@ -1,132 +1,173 @@
-# Task Manager
+# Task Manager — Full Stack Technical Test
 
-A full-stack task management app with JWT authentication. Each user can only see and manage their own tasks.
+A task management app with JWT authentication. Each user can only see and manage their own tasks.
+
+**Live demo:**
+- Frontend: https://prueba-fullstack-lyart.vercel.app
+- API: https://prueba-fullstack-11f9.onrender.com/api
+- Swagger: https://prueba-fullstack-11f9.onrender.com/api/docs
+
+---
 
 ## Stack
 
-| Layer     | Technology                                               |
-|-----------|----------------------------------------------------------|
-| Backend   | NestJS + TypeScript                                      |
-| ORM       | Prisma                                                   |
-| Database  | PostgreSQL                                               |
-| Auth      | JWT (passport-jwt) + bcrypt                             |
-| Validation| class-validator + class-transformer                      |
-| Frontend  | Next.js 14 (App Router) + TypeScript                    |
-| Styling   | Tailwind CSS                                             |
-| State     | TanStack Query (server state) + React Context (auth)    |
-| Forms     | React Hook Form + Zod                                    |
-| Testing   | Jest + React Testing Library (frontend), Jest (backend) |
+| Layer      | Technology                                                   |
+|------------|--------------------------------------------------------------|
+| Backend    | NestJS + TypeScript                                          |
+| Database   | PostgreSQL (Neon — serverless)                               |
+| ORM        | Prisma                                                       |
+| Auth       | JWT via `@nestjs/jwt` + `passport-jwt`                       |
+| Passwords  | bcrypt                                                       |
+| Validation | class-validator + class-transformer                          |
+| API Docs   | Swagger via `@nestjs/swagger`                                |
+| Frontend   | Next.js 14 (App Router) + TypeScript                         |
+| Styling    | Tailwind CSS                                                 |
+| Server state | TanStack Query v5                                          |
+| Forms      | React Hook Form + Zod                                        |
+| HTTP client | Axios with request/response interceptors                    |
+| Testing    | Jest + React Testing Library (frontend), Jest (backend)      |
+| CI         | GitHub Actions                                               |
 
-## Running locally
+---
+
+## How to run the project
 
 ### Prerequisites
 - Node.js 20+
-- Docker (for PostgreSQL) or a PostgreSQL 15+ instance
+- Docker (for local PostgreSQL) or a Neon/Supabase account
 
-### 1. Start the database
-
-```bash
-docker run --name task-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=taskmanager -p 5432:5432 -d postgres:16-alpine
-```
-
-Or use the full Docker Compose:
+### 1. Clone the repo
 
 ```bash
-docker-compose up -d db
+git clone https://github.com/Haku31/Prueba-fullstack.git
+cd Prueba-fullstack
 ```
 
-### 2. Backend
+### 2. Start the database (Docker)
+
+```bash
+docker run --name task-db \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=taskmanager \
+  -p 5432:5432 -d postgres:16-alpine
+```
+
+Or use Docker Compose for the full stack:
+
+```bash
+docker-compose up --build
+```
+
+### 3. Backend
 
 ```bash
 cd backend
-cp .env.example .env
+cp .env.example .env      # fill in your values
 npm install
 npx prisma migrate dev --name init
 npm run start:dev
 ```
 
-API available at: `http://localhost:4000/api`  
-Swagger docs: `http://localhost:4000/api/docs`
+- API: `http://localhost:4000/api`
+- Swagger: `http://localhost:4000/api/docs`
 
-### 3. Frontend
+### 4. Frontend
 
 ```bash
 cd frontend
-cp .env.example .env.local
+cp .env.example .env.local   # fill in your values
 npm install
 npm run dev
 ```
 
-App available at: `http://localhost:3000`
+- App: `http://localhost:3000`
 
-### Full Docker Compose
-
-```bash
-# Build and start everything
-docker-compose up --build
-
-# Stop
-docker-compose down
-```
+---
 
 ## Environment variables
 
-### Backend (`backend/.env`)
+### Backend — `backend/.env`
 
-| Variable       | Description                     | Default                                |
-|----------------|---------------------------------|----------------------------------------|
-| DATABASE_URL   | PostgreSQL connection string    | postgresql://postgres:postgres@localhost:5432/taskmanager |
-| JWT_SECRET     | Secret key for signing JWTs     | —                                      |
-| JWT_EXPIRES_IN | Token expiry                    | 7d                                     |
-| PORT           | API server port                 | 4000                                   |
-| FRONTEND_URL   | Allowed CORS origin             | http://localhost:3000                  |
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/taskmanager?schema=public"
+JWT_SECRET="your-secret-key"
+JWT_EXPIRES_IN="7d"
+PORT=4000
+FRONTEND_URL="http://localhost:3000"
+```
 
-### Frontend (`frontend/.env.local`)
+See `backend/.env.example` for the full template.
 
-| Variable              | Description      | Default                        |
-|-----------------------|------------------|--------------------------------|
-| NEXT_PUBLIC_API_URL   | Backend API URL  | http://localhost:4000/api      |
+### Frontend — `frontend/.env.local`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+See `frontend/.env.example` for the full template.
+
+---
 
 ## API Endpoints
 
-| Method | Path                | Auth | Description                              |
-|--------|---------------------|------|------------------------------------------|
-| POST   | /api/auth/register  | —    | Register (name, email, password)         |
-| POST   | /api/auth/login     | —    | Login → returns JWT                      |
-| GET    | /api/tasks          | JWT  | List tasks (filter: status, page, limit) |
-| POST   | /api/tasks          | JWT  | Create task                              |
-| GET    | /api/tasks/:id      | JWT  | Get task by ID                           |
-| PUT    | /api/tasks/:id      | JWT  | Update task                              |
-| DELETE | /api/tasks/:id      | JWT  | Delete task                              |
+All task endpoints require `Authorization: Bearer <token>`.
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/register` | — | Register (name, email, password) |
+| POST | `/api/auth/login` | — | Login → returns JWT |
+| GET | `/api/tasks` | JWT | List tasks — `?status=PENDING\|DONE&page=1&limit=10` |
+| POST | `/api/tasks` | JWT | Create task (title, description, status, dueDate) |
+| GET | `/api/tasks/:id` | JWT | Get task by ID |
+| PUT | `/api/tasks/:id` | JWT | Update task |
+| DELETE | `/api/tasks/:id` | JWT | Delete task |
+
+A user attempting to access another user's task receives `403 Forbidden`.
+
+---
 
 ## Running tests
 
 ```bash
-# Backend
+# Backend — 12 unit tests
 cd backend && npm test
 
-# Frontend
+# Frontend — 13 unit tests
 cd frontend && npm test
 ```
 
+---
+
 ## Technical decisions
 
-**NestJS over Express**: NestJS provides a structured architecture with built-in DI, modules, and decorators — reduces boilerplate for guards, validation pipes, and Swagger documentation. Better for a multi-endpoint API.
+**NestJS over Express** — NestJS provides a structured architecture with built-in DI, decorators, and modules. This reduces boilerplate for JWT guards, validation pipes, and Swagger. For a multi-endpoint API it pays off immediately.
 
-**Prisma over TypeORM/Drizzle**: Type-safe queries without the complexity of TypeORM decorators. Prisma's migration system is reliable and the generated client provides excellent autocomplete.
+**Prisma over TypeORM / Drizzle** — Type-safe queries without decorator noise. The migration system is reliable and the generated client provides full autocomplete. Easy to read and audit.
 
-**TanStack Query over Redux/Zustand**: The tasks data is fundamentally server state. React Query handles caching, refetching, and loading/error states out of the box without extra boilerplate.
+**TanStack Query over Redux / Zustand** — Task data is server state, not client state. React Query handles caching, background refetch, and loading/error states without extra boilerplate.
 
-**Zod for frontend validation**: Consistent schema definition for forms and type inference — one schema generates both runtime validation and TypeScript types.
+**React Hook Form + Zod** — One Zod schema generates both the TypeScript type and the runtime validation. No duplication between form and type layer.
 
-**JWT in localStorage**: Simpler implementation for this scope. In production, httpOnly cookies would be more secure against XSS.
+**JWT stored in localStorage** — Simpler for this scope. In production httpOnly cookies would protect against XSS. Documented tradeoff, conscious choice.
+
+**Ownership check via shared `findOne`** — `TasksService.findOne` always validates userId. `update` and `delete` call it first, so the access control logic lives in one place and is never skipped.
+
+---
 
 ## What I'd leave for next iteration
 
-- Refresh token flow (short-lived access tokens + long-lived refresh)
+- Refresh token flow (short-lived access + long-lived refresh)
 - E2E tests with Playwright
-- CI with GitHub Actions (lint + test + type-check)
-- Task sorting options (by due date, creation date)
-- User profile/settings page
-- Email notifications for due dates
-- Deploy: Railway (backend) + Vercel (frontend)
+- Task sorting (by due date, creation date)
+- User profile / settings page
+- Email reminders for due dates
+- httpOnly cookie auth for production hardening
+
+---
+
+## Bonus completed
+
+- [x] Docker Compose (full stack)
+- [x] Deploy — Vercel (frontend) + Render (backend) + Neon (database)
+- [x] Swagger docs
+- [x] CI with GitHub Actions (type-check + tests + build on every push)
